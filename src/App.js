@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import {Route, Switch} from 'react-router-dom';
+import {Route, Switch, Redirect} from 'react-router-dom';
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import {connect} from 'react-redux';
 import {setCurrentUser} from './redux/user/user.actions';
@@ -43,17 +43,20 @@ render() {
       <Header/>
       <Switch>
         <Route exact path='/' component={HomePage}/>
-        <Route exact path='/shop' component={ShopPage}/>
-        <Route exact path='/signin' component={SignInSignUp}/>
+        <Route path='/shop' component={ShopPage}/>
+        <Route exact path='/signin' render={() => this.props.currentUser ? (<Redirect to='/' />) : (<SignInSignUp/>)}/>
       </Switch>
     </div>
   )
 }
 }
 
+const msp = ({user}) => ({
+  currentUser: user.currentUser
+})
 const mdp = (dispatch) => ({
   setCurrentUser: user => dispatch(setCurrentUser(user))
 })
 
 
-export default connect(null, mdp)(App);
+export default connect(msp, mdp)(App);
